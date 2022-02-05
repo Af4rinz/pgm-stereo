@@ -1,3 +1,5 @@
 *.zip
 *.docx
 /dataset-2014/
+*.pdf
+
