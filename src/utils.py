@@ -3,9 +3,9 @@ import numpy as np
 from matplotlib import cm
 import os
 
-def pair2grey(left, right):
-    left_grey = cv2.cvtColor(left, cv2.COLOR_BGR2GRAY).astype(np.float32)
-    right_grey = cv2.cvtColor(right, cv2.COLOR_BGR2GRAY).astype(np.float32)
+def pair2grey(left, right, nptype=np.float32):
+    left_grey = cv2.cvtColor(left, cv2.COLOR_BGR2GRAY).astype(nptype)
+    right_grey = cv2.cvtColor(right, cv2.COLOR_BGR2GRAY).astype(nptype)
     return left_grey, right_grey
 
 # load the images from dataset-2005 subdirectories
