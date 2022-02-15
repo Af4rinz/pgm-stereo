@@ -3,7 +3,7 @@ import time
 import numpy as np
 import cv2
 import maxflow
-from utils import pair2grey
+from src.utils import pair2grey
 
 class Graph_Cut_Solver:
     # pixel is occluded
@@ -96,8 +96,8 @@ class Graph_Cut_Solver:
         active_ssd = np.square(self.left - self.right[y_idx, idx_shifted]) - self.occ_cost
         active_ssd[is_label | is_occluded] =  -self.occ_cost - 1
         active_nodes = np.zeros(self.img_shape, dtype=np.int)
-        active_nodes[is_label] = VAR_ALPHA
-        active_nodes[is_occluded] = VAR_ABSENT
+        active_nodes[is_label] = self.VAR_ALPHA
+        active_nodes[is_occluded] = self.VAR_ABSENT
         is_node_active = np.logical_not(is_label | is_occluded)
 
         E_data_occ = active_ssd[is_label].sum()
@@ -108,8 +108,8 @@ class Graph_Cut_Solver:
         label_ssd = np.square(self.left - self.right[y_idx, idx_shifted]) - self.occ_cost
         label_ssd[is_label | is_occluded] =  -self.occ_cost - 1
         label_nodes = np.zeros(self.img_shape, dtype=np.int)
-        label_nodes[is_label] = VAR_ALPHA
-        label_nodes[is_occluded] = VAR_ABSENT
+        label_nodes[is_label] = self.VAR_ALPHA
+        label_nodes[is_occluded] = self.VAR_ABSENT
         is_node_label = np.logical_not(is_label | is_occluded)
 
         node_count = is_node_label.sum() + is_node_active.sum()
@@ -151,13 +151,13 @@ class Graph_Cut_Solver:
             node_active_p, node_active_q = self.active_nodes[y_idx, x_idx]
             is_p_active, is_q_active = self.is_node_active[y_idx, x_idx]
 
-            if node_label_p != VAR_ABSENT and node_label_q != VAR_ABSENT:
+            if node_label_p != self.VAR_ABSENT and node_label_q != self.VAR_ABSENT:
                 penalty = penalty_label[nidx]
-                if node_label_p != VAR_ALPHA and node_label_q != VAR_ALPHA:
+                if node_label_p != self.VAR_ALPHA and node_label_q != self.VAR_ALPHA:
                     self.add_smooth_weights(G, node_label_p, node_label_q, 0, penalty, penalty, 0)
-                elif node_label_p != VAR_ALPHA:
+                elif node_label_p != self.VAR_ALPHA:
                     G.add_tedge(node_label_p, 0, penalty)
-                elif node_label_q != VAR_ALPHA:
+                elif node_label_q != self.VAR_ALPHA:
                     G.add_tedge(node_label_q, 0, penalty)
             penalty_p, penalty_q = penalty_active_p[nidx], penalty_active_q[nidx]
 
@@ -182,7 +182,7 @@ class Graph_Cut_Solver:
         ban_active = self.active_nodes[banned]
 
         self.add_unique_weights(G, ban_label, ban_active)
-        is_node_label = self.label_nodes != VAR_ABSENT
+        is_node_label = self.label_nodes != self.VAR_ABSENT
         banned = self.is_node_active & is_node_label
         self.add_unique_weights(G, self.label_nodes[banned], self.active_nodes[banned])
 
